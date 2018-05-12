@@ -6,10 +6,15 @@ class Equation(object):
         # check input
         assert re.fullmatch('[A-Za-z0-9+ ]+->[A-Za-z0-9+ ]+', seq_str), "Invalid equation: {}".format(seq_str)
         self.seq = seq_str
+        self.left_eq = None
+        self.right_eq = None
 
     def parse_seq(self):
         parse = self.seq.replace(" ", "").split("->", len(self.seq))
-        print(parse)
+        self.left_eq = EquationSide(parse[0])
+        self.right_eq = EquationSide(parse[1])
+        self.left_eq.parse()
+        self.right_eq.parse()
 
 
 class EquationSide(object):

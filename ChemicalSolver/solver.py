@@ -3,6 +3,7 @@ import math
 
 from chemical_class import Equation
 
+
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
 
