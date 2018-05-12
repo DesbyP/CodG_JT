@@ -20,10 +20,15 @@ class Equation(object):
 class EquationSide(object):
     def __init__(self, half_seq_str):
         self.half_seq = half_seq_str
+        self.list_mol = []
 
     def parse(self):
-        pass
+        list_mol = self.half_seq.split("+", len(self.half_seq))
+        for i in range(len(list_mol)):
+            self.list_mol.append(Molecule(list_mol[i]))
+            self.list_mol[i].parse()
 
+        print(list_mol)
 
 class Molecule(object):
     def __init__(self, molecule_str):
