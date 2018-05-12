@@ -10,6 +10,7 @@ from chemical_class import Equation
 unbalanced = "H2 + O2 -> H2O"
 
 equation = Equation(unbalanced)
+equation.parse_seq()
 # solution = equation.solve()
 
 # Write an action using print

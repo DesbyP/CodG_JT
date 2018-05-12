@@ -8,7 +8,8 @@ class Equation(object):
         self.seq = seq_str
 
     def parse_seq(self):
-        pass
+        parse = self.seq.replace(" ", "").split("->", len(self.seq))
+        print(parse)
 
 
 class EquationSide(object):
