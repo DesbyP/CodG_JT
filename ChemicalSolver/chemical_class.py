@@ -5,6 +5,7 @@ class Equation(object):
     def __init__(self, seq_str):
         # check input
         assert re.fullmatch('[A-Za-z0-9+ ]+->[A-Za-z0-9+ ]+', seq_str), "Invalid equation: {}".format(seq_str)
+
         self.seq = seq_str
         self.left_eq = None
         self.right_eq = None
@@ -28,19 +29,35 @@ class EquationSide(object):
             self.list_mol.append(Molecule(list_mol[i]))
             self.list_mol[i].parse()
 
-        print(list_mol)
 
 class Molecule(object):
     def __init__(self, molecule_str):
-        self.molecule = molecule_str
+        self.mol_str = molecule_str
+        self.qty = None
+        self.mol = None
+        self.atoms = None
 
     def parse(self):
-        pass
+        # extract quantity
+        match = re.fullmatch('(?P<qty>[0-9]*)(?P<mol>[A-Za-z0-9]+)', self.mol_str)
+        assert match, "Invalid molecule: {}".format(self.mol_str)
+        self.qty = match.group('qty')
+        self.mol = match.group('mol')
+
+        # extract atoms
+        atoms_str = re.findall("(?P<atoms>[A-Za-z]+[0-9]*)", self.mol)
+        self.atoms = [Atom(a) for a in atoms_str]
+        for a in self.atoms:
+            a.parse()
 
 
 class Atom(object):
     def __init__(self, atom_str):
-        self.atom = atom_str
+        self.atom_str = atom_str
+        self.qty = None
+        self.symbol = None
 
     def parse(self):
-        pass
+        match = re.fullmatch('(?P<symbol>[A-Za-z]+)(?P<qty>[0-9]*)', self.atom_str)
+        self.qty = match.group('qty')
+        self.symbol = match.group('symbol')
