@@ -1,5 +1,10 @@
+import re
+
+
 class Equation(object):
     def __init__(self, seq_str):
+        # check input
+        assert re.fullmatch('[A-Za-z0-9+ ]+->[A-Za-z0-9+ ]+', seq_str), "Invalid equation: {}".format(seq_str)
         self.seq = seq_str
 
     def parse_seq(self):
