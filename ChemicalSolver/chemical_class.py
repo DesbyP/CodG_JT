@@ -11,12 +11,19 @@ class Equation(object):
         self.right_eq = None
 
     def parse_seq(self):
-        parse = self.seq.replace(" ", "").split("->", len(self.seq))
+        parse = self.seq.replace(" ", "").split("->", 1)
         self.left_eq = EquationSide(parse[0])
         self.right_eq = EquationSide(parse[1])
         self.left_eq.parse()
         self.right_eq.parse()
 
+    def solve(self):
+        pass
+        return None
+
+    def is_equilibrate(self):
+        pass
+        return false
 
 class EquationSide(object):
     def __init__(self, half_seq_str):
@@ -24,7 +31,7 @@ class EquationSide(object):
         self.list_mol = []
 
     def parse(self):
-        list_mol = self.half_seq.split("+", len(self.half_seq))
+        list_mol = self.half_seq.split("+")
         for i in range(len(list_mol)):
             self.list_mol.append(Molecule(list_mol[i]))
             self.list_mol[i].parse()
