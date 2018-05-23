@@ -23,7 +23,7 @@ class Equation(object):
 
     def is_equilibrate(self):
         pass
-        return false
+        return False
 
 class EquationSide(object):
     def __init__(self, half_seq_str):
