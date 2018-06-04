@@ -21,17 +21,52 @@ class Equation(object):
         self.left_eq.parse()
         self.right_eq.parse()
 
+    def is_equilibrate(self, sol_to_try):
+        result = False  # Variable que retourne la fonction
+        number_of_checked_atoms = 0
+        dictionnary_left_side_values = {}  # On donne en clé l'atome et en value la qty
+        dictionnary_right_side_values = {}  # On donne en clé l'atome et en value la qty
+
+        #  2 boucles pour le coté gauche
+        for m_l in self.left_eq.list_mol:
+            # print(m_l)  # Affiche la molécule
+            # print(m_l.qty)  # Coef stoechio de la molécule
+
+            for at in m_l.atoms:
+                # print(at.symbol)  # Affiche l'atome
+                # print(at.qty)  # Nombres d'atomes dans la molécule
+                if at.qty == 0: at.qty = 1
+                if m_l.qty == 0: m_l.qty = 1
+                dictionnary_left_side_values[at.symbol] = m_l.qty * at.qty
+        print(dictionnary_left_side_values)
+
+        #  2 boucles pour le coté droit
+        for m_r in self.right_eq.list_mol:
+            # print(m_r)  # Affiche la molécule
+            # print(m_r.qty)  # Coef stoechio de la molécule
+
+            for at_r in m_r.atoms:
+                # print(at_r.symbol)  # Affiche l'atome
+                # print(at_r.qty)  # Nombres d'atomes dans la molécule
+                if at_r.qty == 0: at_r.qty = 1
+                if m_r.qty == 0: m_r.qty = 1
+                dictionnary_right_side_values[at_r.symbol] = m_r.qty * at_r.qty
+        print(dictionnary_right_side_values)
+
+        if dictionnary_right_side_values == dictionnary_left_side_values:
+            print("T'es un bon prof Man !! <3 ")
+            result = True
+
+        return result
+
     def solve(self):
         for i, f in enumerate(self.generate_factors()):
             self.apply_factors(f)
             print(str(self))
-            if self.is_equilibrate():
+            if self.is_equilibrate(str(self)):
                 break
         print("{} solutions have been tried".format(i + 1))
         return str(self)
-
-    def is_equilibrate(self):
-        return str(self) == "2H2 + O2 -> 2H2O"
 
     def generate_factors(self):
         nb_mol = len(self.left_eq.list_mol) + len(self.right_eq.list_mol)
