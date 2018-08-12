@@ -21,7 +21,7 @@ class Equation(object):
         self.left_eq.parse()
         self.right_eq.parse()
 
-    def is_equilibrate(self, sol_to_try):
+    def is_equilibrate(self):
         result = False  # Variable que retourne la fonction
         number_of_checked_atoms = 0
         dictionnary_left_side_values = {}  # On donne en clé l'atome et en value la qty
@@ -35,9 +35,8 @@ class Equation(object):
             for at in m_l.atoms:
                 # print(at.symbol)  # Affiche l'atome
                 # print(at.qty)  # Nombres d'atomes dans la molécule
-                if at.qty == 0: at.qty = 1
-                if m_l.qty == 0: m_l.qty = 1
-                dictionnary_left_side_values[at.symbol] = m_l.qty * at.qty
+                dictionnary_left_side_values[at.symbol] = \
+                    m_l.qty * at.qty + dictionnary_left_side_values.setdefault(at.symbol, 0)
         # print(dictionnary_left_side_values)
 
         #  2 boucles pour le coté droit
@@ -48,9 +47,8 @@ class Equation(object):
             for at_r in m_r.atoms:
                 # print(at_r.symbol)  # Affiche l'atome
                 # print(at_r.qty)  # Nombres d'atomes dans la molécule
-                if at_r.qty == 0: at_r.qty = 1
-                if m_r.qty == 0: m_r.qty = 1
-                dictionnary_right_side_values[at_r.symbol] = m_r.qty * at_r.qty
+                dictionnary_right_side_values[at_r.symbol] = \
+                    m_r.qty * at_r.qty + dictionnary_right_side_values.setdefault(at_r.symbol, 0)
         # print(dictionnary_right_side_values)
 
         if dictionnary_right_side_values == dictionnary_left_side_values:
@@ -60,10 +58,11 @@ class Equation(object):
         return result
 
     def solve(self):
-        for i, f in enumerate(self.generate_factors()):
+        # TODO JeanTho quand tu auras fait simplify tu pourras utiliser self.generate_factors
+        for i, f in enumerate(self.generate_factors_best_try()):
             self.apply_factors(f)
-            print(str(self))
-            if self.is_equilibrate(str(self)):
+            # print(str(self))
+            if self.is_equilibrate():
                 break
         print("{} solutions have been tried".format(i + 1))
         return str(self)
@@ -71,20 +70,22 @@ class Equation(object):
     def generate_factors_best_try(self):
         nb_mol = len(self.left_eq.list_mol) + len(self.right_eq.list_mol)
         # nombres premiers
-        steps = [2, 3, 5, 7, 11]    # , 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+        steps = [2, 3, 5, 7, 11, 13, 17]    # , 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
         f = (1,) * nb_mol
-        tried = {f}
         yield f
 
         random.seed()
         for step in steps:
             print("--- step {} ---".format(step))
             nb_possible_solutions = step ** nb_mol
-            for _ in range(nb_possible_solutions):
+            tried = set()
+            for _ in range(nb_possible_solutions-1):
                 while f in tried:
+                    # print(len(f), len(tried), nb_possible_solutions, step, nb_mol)
                     f = tuple(random.randint(1, step) for i in range(nb_mol))
                 tried.add(f)
                 yield f
+        yield (0,) * nb_mol
 
     def generate_factors(self):
         nb_mol = len(self.left_eq.list_mol) + len(self.right_eq.list_mol)
@@ -104,6 +105,8 @@ class Equation(object):
                 yield f
 
     def apply_factors(self, f):
+        if f == (2,1,1,2):
+            print("ahah")
         all_mols = self.left_eq.list_mol[:]
         all_mols.extend(self.right_eq.list_mol)
         assert len(f) == len(all_mols)
@@ -145,7 +148,7 @@ class Molecule(object):
         self.mol = match.group('mol')
 
         # extract atoms
-        atoms_str = re.findall("(?P<atoms>[A-Za-z]+[0-9]*)", self.mol)
+        atoms_str = re.findall("(?P<atoms>[A-Z][a-z]*[0-9]*)", self.mol)
         self.atoms = [Atom(a) for a in atoms_str]
         for a in self.atoms:
             a.parse()
